@@ -23,10 +23,13 @@ import com.vaadin.data.util.AbstractContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.VaadinPropertyDescriptor;
 import com.vaadin.data.util.filter.UnsupportedFilterException;
+import com.vaadin.server.VaadinServletService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -326,12 +329,24 @@ public class LazyContainer<IDTYPE, BEANTYPE> extends AbstractContainer implement
         return Collections.emptyList();
     }
 
+    private WeakReference<HttpServletRequest> weakRef = null;
+
     protected boolean needRefreshCachedSize() {
-        // in this implementation, this uses Thread's ID.
-        // this implementation assumes that every Thread that process each ServletRequest is different always.
-        // and there are few times that need repeatedly Container's content refreshing.
-        long id = Thread.currentThread().getId();
-        return threadId == null || id != threadId;
+        // in older version, thread's id was used.
+        // but in some environment, thread's id was not unique each request.
+        // so use servletrequest's object identity insted.
+        final HttpServletRequest currentServletRequest = VaadinServletService.getCurrentServletRequest();
+        if (weakRef == null || weakRef.get() == null) {
+            weakRef = new WeakReference<>(currentServletRequest);
+            return true;
+        } else {
+            if (weakRef.get() == currentServletRequest) {
+                return false;
+            } else {
+                weakRef = new WeakReference<>(currentServletRequest);
+                return true;
+            }
+        }
     }
 
     protected void refreshCachedSize() {
