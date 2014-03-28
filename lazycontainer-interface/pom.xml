@@ -6,11 +6,11 @@
 
     <groupId>org.vaadin.addons</groupId>
     <artifactId>lazycontainer-interface</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 
     <parent>
         <groupId>org.vaadin.addons</groupId>
         <artifactId>lazycontainer-pom</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 </project>
