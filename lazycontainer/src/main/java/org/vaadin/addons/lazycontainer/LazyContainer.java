@@ -336,24 +336,19 @@ public class LazyContainer<IDTYPE, BEANTYPE> extends AbstractContainer implement
         // but in some environment, thread's id was not unique each request.
         // so use servletrequest's object identity insted.
         final HttpServletRequest currentServletRequest = VaadinServletService.getCurrentServletRequest();
-        if (weakRef == null || weakRef.get() == null) {
-            weakRef = new WeakReference<>(currentServletRequest);
+        if (weakRef == null || weakRef.get() == null)
             return true;
-        } else {
-            if (weakRef.get() == currentServletRequest) {
-                return false;
-            } else {
-                weakRef = new WeakReference<>(currentServletRequest);
-                return true;
-            }
-        }
+        if (weakRef.get() == currentServletRequest)
+            return false;
+        return true;
     }
 
     protected void refreshCachedSize() {
-        threadId = Thread.currentThread().getId();
+        final HttpServletRequest currentServletRequest = VaadinServletService.getCurrentServletRequest();
+        weakRef = new WeakReference<>(currentServletRequest);
     }
 
     protected void clearCachedSize() {
-        threadId = null;
+        weakRef = null;
     }
 }
