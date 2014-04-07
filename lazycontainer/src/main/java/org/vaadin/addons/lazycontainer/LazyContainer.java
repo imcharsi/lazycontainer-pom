@@ -130,11 +130,15 @@ public class LazyContainer<IDTYPE, BEANTYPE> extends AbstractContainer implement
     public int indexOfId(Object itemId) {
         // this method is used by ComboBox with ItemCaptionMode.PROPERTY
         // in this situation, we should retrieve item's index directly.
+        if (id2Index.containsKey(itemId))
+            return id2Index.get(itemId);
         return retrieveDelegate.indexOfId((IDTYPE) itemId, sortPropertyId, sortAscending, condition);
     }
 
     @Override
     public Object getIdByIndex(int index) {
+        if (index2Id.containsKey(index))
+            return index2Id.get(index);
         return retrieveDelegate.getIdByIndex(index, sortPropertyId, sortAscending, condition);
     }
 
